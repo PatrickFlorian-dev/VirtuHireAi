@@ -1,30 +1,30 @@
-import React from "react";
+import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
 import Button from "./Button";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const Navbar: React.FC = () => {
-  const { user, login, logout } = useAuth();
+const Navbar = () => {
+  const { user, logout } = useAuth();
 
   return (
-    <nav className="navbar">
-      <h1>My App</h1>
-      <ul>
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/profile">Profile</Link></li>
-      </ul>
-      <div>
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <nav>
+        <Link to="/">Home</Link>
         {user ? (
-          <Button text="Logout" onClick={logout} className="logout-btn" />
+          <>
+            <Link to="/profile">Profile</Link>
+            <Button text="Logout" onClick={logout} />
+          </>
         ) : (
-          <Button
-            text="Login"
-            onClick={() => login({ id: 1, name: "John Doe" })}
-            className="login-btn"
-          />
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
+          </>
         )}
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 };
 

@@ -1,10 +1,34 @@
-import React from "react";
+import { useState } from "react";
+import Login from "../pages/Login"; 
+import Button from "../components/Button";
+import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
-const Home: React.FC = () => {
+const Home = () => {
+  const { user, logout } = useAuth();
+  const [showLogin, setShowLogin] = useState(true);
+
   return (
     <div>
-      <h1>Welcome to Home</h1>
-      <p>This is the home page.</p>
+      {user ? (
+        <div>
+          <h2>User has logged in, welcome!</h2>
+          <Button text="Logout" onClick={logout} />
+        </div>
+      ) : (
+        <div>
+          {showLogin && <Login />} {/* ✅ Conditionally show login form */}
+          <Button text="Register" onClick={() => setShowLogin(false)} />
+          {!showLogin && (
+            <div>
+              <h3>Register Page Placeholder</h3>
+              <Link to="/register">
+                <Button text="Go to Register" onClick={() => {}} />
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

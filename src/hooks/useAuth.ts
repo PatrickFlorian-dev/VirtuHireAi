@@ -1,27 +1,35 @@
-// Where to use useAuth.ts?
-//  • Inside Navbar.tsx (to show login/logout state)
-//  • Inside Profile.tsx (to display user info)
-
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { setUser, logout } from "../store/userSlice";
+import { refreshTokenAction, logout } from "../store/userSlice"; // ✅ Import logout
+import { AppDispatch, RootState } from "../store/store";
 
-const useAuth = () => {
-  const dispatch = useDispatch();
+export const useAuth = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.user);
+  const [loading, setLoading] = useState(true);
 
-  const login = (userData: { id: number; name: string }) => {
-    dispatch(setUser(userData));
-    localStorage.setItem("user", JSON.stringify(userData));
-  };
+  const refreshToken = useCallback(async () => {
+    try {
+      await dispatch(refreshTokenAction()).unwrap();
+    } catch (error) {
+      console.error("Failed to refresh token", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    // TODOL add a check for the user object token to prevent unnecessary refreshes
+    if (user) {
+      refreshToken();
+    } else {
+      setLoading(false);
+    }
+  }, [refreshToken, user]);
 
   const handleLogout = () => {
-    dispatch(logout());
-    localStorage.removeItem("user");
+    dispatch(logout()); 
   };
 
-  return { user, login, logout: handleLogout };
+  return { user, loading, logout: handleLogout };
 };
-
-export default useAuth;
-
