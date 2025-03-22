@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { refreshTokenAction, logout } from "../store/userSlice"; // ✅ Import logout
+import { refreshTokenAction, logout } from "../store/userSlice";
 import { AppDispatch, RootState } from "../store/store";
+import { isTokenExpiring } from "../utils/tokenUtils";
 
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user.user);
+  const token = useSelector((state: RootState) => state.user.token);
   const [loading, setLoading] = useState(true);
 
   const refreshToken = useCallback(async () => {
@@ -19,13 +21,12 @@ export const useAuth = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // TODOL add a check for the user object token to prevent unnecessary refreshes
-    if (user) {
-      refreshToken();
+    if (user && isTokenExpiring()) {
+      // refreshToken(); TODO: Uncomment this line + implement token refresh
     } else {
       setLoading(false);
     }
-  }, [refreshToken, user]);
+  }, [refreshToken, user, token]);
 
   const handleLogout = () => {
     dispatch(logout()); 

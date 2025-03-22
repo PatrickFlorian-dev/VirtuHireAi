@@ -3,6 +3,7 @@ import React from "react";
 interface ButtonProps {
   text: string;
   onClick: () => void;
+  className?: string;
   disabled?: boolean; // ✅ Allow the disabled prop
 }
 

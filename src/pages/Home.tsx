@@ -12,7 +12,7 @@ const Home = () => {
     <div>
       {user ? (
         <div>
-          <h2>User has logged in, welcome!</h2>
+            <h2>Welcome {user.name}!</h2>
           <Button text="Logout" onClick={logout} />
         </div>
       ) : (

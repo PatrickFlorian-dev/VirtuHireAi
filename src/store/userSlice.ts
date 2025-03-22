@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-
+import { jwtDecode } from "jwt-decode";
 interface User {
   id: number;
   name: string;
@@ -25,34 +25,9 @@ const initialState: UserState = {
   error: null,
 };
 
-// ✅ Define Error Type
 interface AuthError {
   message: string;
 }
-
-export const loginUser = createAsyncThunk(
-  "user/login",
-  async (credentials: { name: string; password: string }, { rejectWithValue }) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      });
-
-      if (!response.ok) {
-        throw new Error("Invalid username or password");
-      }
-
-      const data = await response.json();
-      toast.success("Login successful! 🎉"); // ✅ Show success notification
-      return data;
-    } catch (error) {
-      toast.error((error as Error).message); // ✅ Show error notification
-      return rejectWithValue((error as Error).message);
-    }
-  }
-);
 
 const userSlice = createSlice({
   name: "user",
@@ -77,12 +52,45 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = (action.payload as AuthError)?.message ?? "An unknown error occurred"; // ✅ Prevents `undefined`
+        state.error = (action.payload as AuthError)?.message ?? "An unknown error occurred"; 
       });
   },
 });
 
 export const { logout } = userSlice.actions;
+
+export const loginUser = createAsyncThunk(
+  "user/login",
+  async (credentials: { name: string; password: string }, { rejectWithValue }) => {
+    try {
+
+      const token = localStorage.getItem('token');
+
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(credentials),
+      });
+
+      if (!response.ok) {
+        throw new Error("Invalid username or password");
+      }
+
+      const data = await response.json();
+      const decodedToken: { exp: number } = jwtDecode<{ exp: number }>(data.token);
+      localStorage.setItem("tokenExpiration", (decodedToken.exp * 1000).toString());
+      toast.success("Login successful! 🎉");
+      return data;
+    } catch (error) {
+      toast.error(`Failed to login error: ${(error as Error).message}`);
+      console.error("Failed to login", error); // TODO: Remove this
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
 
 export const registerUser = createAsyncThunk<
   AuthResponse,
@@ -104,6 +112,8 @@ export const registerUser = createAsyncThunk<
     localStorage.setItem("token", data.token);
     return data;
   } catch (error: unknown) {
+    toast.error(`Failed to register error: ${(error as Error).message}`);
+    console.error("Failed to register", error); // TODO: Remove this
     return thunkAPI.rejectWithValue({ message: (error as Error).message });
   }
 });
@@ -125,6 +135,8 @@ export const refreshTokenAction = createAsyncThunk(
       const data = await response.json();
       return { token: data.accessToken, user: data.user };
     } catch (error: unknown) {
+      toast.error(`Failed to refresh error: ${(error as Error).message}`); 
+      console.error("Failed to refresh", error); // TODO: Remove this
       return rejectWithValue({ message: (error as Error).message });
     }
   }

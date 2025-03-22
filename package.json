@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "@readyplayerme/react-avatar-creator": "^0.5.0",
+    "@readyplayerme/visage": "^6.8.2",
     "@reduxjs/toolkit": "^2.6.1",
+    "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
+    "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
