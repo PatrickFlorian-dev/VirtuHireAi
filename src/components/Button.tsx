@@ -1,11 +1,5 @@
 import React from "react";
-
-interface ButtonProps {
-  text: string;
-  onClick: () => void;
-  className?: string;
-  disabled?: boolean; // ✅ Allow the disabled prop
-}
+import { ButtonProps } from "../interfaces/generalTypes";
 
 const Button: React.FC<ButtonProps> = ({ text, onClick, disabled = false }) => {
   return (

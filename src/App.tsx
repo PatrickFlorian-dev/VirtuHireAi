@@ -17,7 +17,7 @@ function App() {
 
 function AppContent() {
   const location = useLocation();
-  const showNavbar = !["/login", "/register"].includes(location.pathname);
+  const showNavbar = !["/notfound"].includes(location.pathname);
 
   return (
     <>

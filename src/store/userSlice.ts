@@ -1,22 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
-interface User {
-  id: number;
-  name: string;
-}
-
-interface AuthResponse {
-  user: User;
-  token: string;
-}
-
-interface UserState {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  error: string | null;
-}
+import { UserState } from "../interfaces/userTypes";
+import { AuthResponse, AuthError } from "../interfaces/generalTypes";
+import { User } from "../interfaces/userTypes";
 
 const initialState: UserState = {
   user: null,
@@ -25,53 +12,13 @@ const initialState: UserState = {
   error: null,
 };
 
-interface AuthError {
-  message: string;
-}
-
-const userSlice = createSlice({
-  name: "user",
-  initialState,
-  reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      localStorage.removeItem("token");
-    },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(loginUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as AuthError)?.message ?? "An unknown error occurred"; 
-      });
-  },
-});
-
-export const { logout } = userSlice.actions;
-
 export const loginUser = createAsyncThunk(
   "user/login",
-  async (credentials: { name: string; password: string }, { rejectWithValue }) => {
+  async (credentials: { username: string; password: string }, { rejectWithValue }) => {
     try {
-
-      const token = localStorage.getItem('token');
-
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}` 
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
       });
 
@@ -82,11 +29,12 @@ export const loginUser = createAsyncThunk(
       const data = await response.json();
       const decodedToken: { exp: number } = jwtDecode<{ exp: number }>(data.token);
       localStorage.setItem("tokenExpiration", (decodedToken.exp * 1000).toString());
+      localStorage.setItem("token", data.token);
+      
       toast.success("Login successful! 🎉");
       return data;
     } catch (error) {
-      toast.error(`Failed to login error: ${(error as Error).message}`);
-      console.error("Failed to login", error); // TODO: Remove this
+      toast.error(`Failed to login: ${(error as Error).message}`);
       return rejectWithValue((error as Error).message);
     }
   }
@@ -94,7 +42,7 @@ export const loginUser = createAsyncThunk(
 
 export const registerUser = createAsyncThunk<
   AuthResponse,
-  { name: string; email: string; password: string },
+  User,
   { rejectValue: AuthError }
 >("user/register", async (userData, thunkAPI) => {
   try {
@@ -112,10 +60,52 @@ export const registerUser = createAsyncThunk<
     localStorage.setItem("token", data.token);
     return data;
   } catch (error: unknown) {
-    toast.error(`Failed to register error: ${(error as Error).message}`);
-    console.error("Failed to register", error); // TODO: Remove this
+    toast.error(`Failed to register: ${(error as Error).message}`);
     return thunkAPI.rejectWithValue({ message: (error as Error).message });
   }
+});
+
+const userSlice = createSlice({
+  name: "user",
+  initialState,
+  reducers: {
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+      localStorage.removeItem("token");
+      toast.info("Logged out successfully");
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        toast.success("Registration successful! 🎉");
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Registration failed";
+      });
+  },
 });
 
 export const refreshTokenAction = createAsyncThunk(
@@ -142,4 +132,5 @@ export const refreshTokenAction = createAsyncThunk(
   }
 );
 
+export const { logout } = userSlice.actions;
 export default userSlice.reducer;

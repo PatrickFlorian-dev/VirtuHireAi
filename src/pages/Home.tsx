@@ -6,24 +6,23 @@ import { useAuth } from "../hooks/useAuth";
 
 const Home = () => {
   const { user, logout } = useAuth();
-  const [showLogin, setShowLogin] = useState(true);
+  const [showLogin] = useState(true);
 
   return (
     <div>
       {user ? (
         <div>
-            <h2>Welcome {user.name}!</h2>
+            <h2>Welcome {user.username}!</h2>
           <Button text="Logout" onClick={logout} />
         </div>
       ) : (
         <div>
           {showLogin && <Login />} {/* ✅ Conditionally show login form */}
-          <Button text="Register" onClick={() => setShowLogin(false)} />
           {!showLogin && (
             <div>
               <h3>Register Page Placeholder</h3>
               <Link to="/register">
-                <Button text="Go to Register" onClick={() => {}} />
+                <Button text="Register" onClick={() => {}} />
               </Link>
             </div>
           )}

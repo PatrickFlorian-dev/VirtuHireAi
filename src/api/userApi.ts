@@ -1,9 +1,5 @@
 const API_URL = "https://jsonplaceholder.typicode.com/users";
-
-interface User {
-  id: number;
-  name: string;
-}
+import { User } from "../interfaces/userTypes";
 
 export const fetchUsers = async (): Promise<User[]> => {
   const response = await fetch(API_URL);
