@@ -16,6 +16,7 @@
     "@react-three/fiber": "^9.1.0",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/vite": "^4.0.15",
+    "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
     "emailjs-com": "^3.2.0",

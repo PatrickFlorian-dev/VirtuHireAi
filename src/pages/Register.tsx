@@ -27,7 +27,12 @@ const Register = () => {
   const companyName = watch("companyName");
 
   const onSubmit = async (data: RegisterFormInputs) => {
-    const user: User = mapRegisterFormToUser(data);
+    const user: User & { showToast: true; successMessage: string; errorMessage: string } = {
+      ...mapRegisterFormToUser(data),
+      showToast: true,
+      successMessage: "Registration successful!",
+      errorMessage: "Registration failed. Please try again."
+    };
     await dispatch(registerUser(user));
     await navigate("/profile");
   };
