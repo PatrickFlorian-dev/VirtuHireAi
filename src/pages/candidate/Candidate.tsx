@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { User } from "../interfaces/userTypes";
+import { User } from "../../interfaces/userTypes";
 
-const VerifyUser: React.FC = () => {
+const Candidate: React.FC = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId"); // Get userId from URL
   const [user, setUser] = useState<User | null>(null);
@@ -61,7 +61,7 @@ const VerifyUser: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h1>Verify User</h1>
+      <h1>Verify Candidate</h1>
 
       {loading ? (
         <p>Loading user info...</p>
@@ -82,10 +82,10 @@ const VerifyUser: React.FC = () => {
           </form>
         </div>
       ) : (
-        <p>User not found.</p>
+        <p>Candidate not found.</p>
       )}
     </div>
   );
 };
 
-export default VerifyUser;
+export default Candidate;

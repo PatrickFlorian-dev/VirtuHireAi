@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../store/userSlice";
-import { AppDispatch, RootState } from "../store/store";
+import { loginUser } from "../../store/userSlice";
+import { AppDispatch, RootState } from "../../store/store";
 
 type LoginFormInputs = {
   username: string;
@@ -19,7 +19,12 @@ const Login = () => {
   const password = watch("password");
 
   const onSubmit = async (data: LoginFormInputs) => {
-    await dispatch(loginUser(data));
+    await dispatch(loginUser({
+      ...data,
+      showToast: true,
+      successMessage: "Login successful 🎉",
+      errorMessage: "Failed to login 🚫"
+    }));
   };
 
   if (user?.username) {

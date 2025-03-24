@@ -1,40 +1,12 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Home from "./pages/Home";
-import Profile from "./pages/Profile";
-import Login from "./pages/Login";
-import Demo from "./pages/Demo";
-import Register from "./pages/Register";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Navbar from "./components/Navbar"; 
+import { BrowserRouter as Router } from "react-router-dom";
+import MainRoutes from "./routes/mainRoutes";
 
 function App() {
   return (
     <Router>
-      <AppContent />
+      <MainRoutes />
     </Router>
   );
 }
-
-function AppContent() {
-  const location = useLocation();
-  const showNavbar = !["/notfound"].includes(location.pathname);
-
-  return (
-    <>
-      {showNavbar && <Navbar />}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/demo" element={<Demo />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        {/* 🔒 Protect Profile Route */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/profile" element={<Profile />} />
-        </Route>
-      </Routes>
-    </>
-  );
-}
-
 
 export default App;

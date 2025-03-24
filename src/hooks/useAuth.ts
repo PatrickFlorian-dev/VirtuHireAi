@@ -12,7 +12,11 @@ export const useAuth = () => {
 
   const refreshToken = useCallback(async () => {
     try {
-      await dispatch(refreshTokenAction()).unwrap();
+      await dispatch(refreshTokenAction({ 
+        showToast: true, 
+        successMessage: "Token refreshed successfully", 
+        errorMessage: "Failed to refresh token" 
+      })).unwrap();
     } catch (error) {
       console.error("Failed to refresh token", error);
     } finally {

@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "../store/userSlice";
-import { AppDispatch, RootState } from "../store/store";
+import { registerUser } from "../../store/userSlice";
+import { AppDispatch, RootState } from "../../store/store";
 import { useNavigate } from "react-router-dom";
-import { User } from "../interfaces/userTypes";
-import { RegisterFormInputs } from "../interfaces/forms/registerFormInputs";
-import { mapRegisterFormToUser } from "../utils/mapping/formToObjMapper";
+import { User } from "../../interfaces/userTypes";
+import { RegisterFormInputs } from "../../interfaces/forms/registerFormInputs";
+import { mapRegisterFormToUser } from "../../utils/mapping/formToObjMapper";
 
 const Register = () => {
   const {

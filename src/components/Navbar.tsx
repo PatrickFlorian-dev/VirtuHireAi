@@ -30,19 +30,24 @@ const Navbar = () => {
           <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul className="navbar-nav"> 
                 <li className="nav-item">
-                <Link className="nav-link" to="/demo">Demo</Link>
                 </li>
                 {user ? (
                 <>
                   <li className="nav-item">
-                  <Link className="nav-link" to="/profile">Profile</Link>
+                    <Link className="nav-link" to="/admin/dashboard">Admin</Link>
                   </li>
                   <li className="nav-item">
-                  <Button text="Logout" onClick={logout} className="btn btn-danger nav-link" />
+                    <Link className="nav-link" to="/profile">Profile</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Button text="Logout" onClick={logout} className="btn btn-danger nav-link" />
                   </li>
                 </>
                 ) : (
                 <>
+                  <li>
+                    <Link className="nav-link" to="/demo">Demo</Link>
+                  </li>
                   <li className="nav-item">
                   <Link className="nav-link" to="/login">Login</Link>
                   </li>
