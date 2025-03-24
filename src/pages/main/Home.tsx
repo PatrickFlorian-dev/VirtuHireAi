@@ -6,7 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { Container, Row, Col } from 'react-bootstrap';
 
 const Home = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [showLogin] = useState(true);
 
   return (
@@ -18,7 +18,6 @@ const Home = () => {
           {user ? (
             <div className="text-center">
               <h2>Welcome {user.username}!</h2>
-              <Button text="Logout" onClick={logout} />
             </div>
           ) : (
             <div className="text-center">

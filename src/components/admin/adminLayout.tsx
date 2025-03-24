@@ -1,24 +1,46 @@
 import { useState } from 'react';
 import { Nav, Button, Container, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faHome,
+  faTachometerAlt,
+  faBuilding,
+  faUsers,
+  faBriefcase,
+  faCalendarCheck,
+  faUserTie,
+  faBars,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+
+const navItems = [
+  { to: '/', label: 'Home', icon: faHome },
+  { to: '/admin/dashboard', label: 'Dashboard', icon: faTachometerAlt },
+  { to: '/admin/company', label: 'Company Management', icon: faBuilding },
+  { to: '/admin/employee', label: 'Employee Management', icon: faUsers },
+  { to: '/admin/job', label: 'Job Management', icon: faBriefcase },
+  { to: '/admin/interview', label: 'Interview Management', icon: faCalendarCheck },
+  { to: '/admin/candidate', label: 'Candidate Management', icon: faUserTie },
+];
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [collapsed, setCollapsed] = useState(false);
-
-  // 👇 Control the smoothness here (in milliseconds)
-  const transitionSpeed = 300; // adjust this number to make it slower (e.g., 500ms) or faster (e.g., 150ms)
+  const location = useLocation();
+  const transitionSpeed = 300;
 
   return (
     <Container fluid>
       <Row>
         {/* Sidebar */}
         <Col
-          md={collapsed ? 1 : 3}
+          md="auto"
           className="bg-dark text-white vh-100 p-3"
           style={{
-            transition: `all ${transitionSpeed}ms ease-in-out`,
+            transition: `width ${transitionSpeed}ms ease-in-out`,
             overflow: 'hidden',
-            width: collapsed ? '80px' : '250px', // fallback if md doesn't cover it
+            width: collapsed ? '80px' : '250px',
+            position: 'relative',
           }}
         >
           <Button
@@ -27,33 +49,46 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             onClick={() => setCollapsed(!collapsed)}
             className="mb-4"
           >
-            {collapsed ? '☰' : '✕'}
+            <FontAwesomeIcon icon={collapsed ? faBars : faTimes} />
           </Button>
 
-          <div
-            style={{
-              opacity: collapsed ? 0 : 1,
-              transition: `opacity ${transitionSpeed}ms ease-in-out`,
-              pointerEvents: collapsed ? 'none' : 'auto',
-            }}
-          >
-            <Nav className="flex-column">
-              <Nav.Link as={Link} to="/" className="text-white">Home</Nav.Link>
-              <Nav.Link as={Link} to="/admin/dashboard" className="text-white">Dashboard</Nav.Link>
-              <Nav.Link as={Link} to="/admin/company" className="text-white">Company Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/employee" className="text-white">Employee Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/job" className="text-white">Job Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/interview" className="text-white">Interview Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/candidate" className="text-white">Candidate Management</Nav.Link>
-            </Nav>
-          </div>
+          <Nav className="flex-column gap-3">
+            {navItems.map((item) => (
+              <Nav.Link
+                as={Link}
+                key={item.to}
+                to={item.to}
+                className={`d-flex align-items-center text-white gap-2 ${
+                  location.pathname === item.to ? 'fw-bold' : 'fw-normal'
+                }`}
+                style={{
+                  transition: `padding ${transitionSpeed}ms ease-in-out`,
+                  paddingLeft: collapsed ? '0.5rem' : '1rem',
+                  overflow: 'hidden',
+                }}
+              >
+                <FontAwesomeIcon icon={item.icon} size="lg" />
+                <span
+                  style={{
+                    display: 'inline-block',
+                    whiteSpace: 'nowrap',
+                    transition: `transform ${transitionSpeed}ms ease, opacity ${transitionSpeed}ms ease`,
+                    transform: collapsed ? 'translateX(-20px)' : 'translateX(0)',
+                    opacity: collapsed ? 0 : 1,
+                  }}
+                >
+                  {item.label}
+                </span>
+              </Nav.Link>
+            ))}
+          </Nav>
         </Col>
 
         {/* Main Content */}
         <Col
-          md={collapsed ? 11 : 9}
           style={{
-            transition: `all ${transitionSpeed}ms ease-in-out`,
+            transition: `margin-left ${transitionSpeed}ms ease-in-out`,
+            marginLeft: collapsed ? '80px' : '250px',
           }}
           className="p-4"
         >
