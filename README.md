@@ -1,5 +1,10 @@
-# Coming soon
-- Beginning development more notes to come soon
+# VirtuHire AI (React / Redux / Axios)
+
+## Installation Steps
+* $ npm i
+* $ npm run dev 
+
+TODO: upgrade to nodemon, error handling and logging, swagger/openai, etc
 
 # React + TypeScript + Vite
 
