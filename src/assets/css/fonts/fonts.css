@@ -1,0 +1,9 @@
+@import url('https://fonts.cdnfonts.com/css/space-mono');
+
+body {
+  font-family: 'Space Mono', sans-serif;
+}
+
+:root {
+  font-family: 'Space Mono', sans-serif;
+}

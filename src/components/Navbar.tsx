@@ -4,6 +4,8 @@ import Button from "./Button";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -14,7 +16,7 @@ const Navbar = () => {
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
           {/* Left Side - Home Link */}
-          <Link className="navbar-brand" to="/">Home</Link>
+          <Link className="navbar-brand" to="/">Home <FontAwesomeIcon icon={faHome} /></Link>
 
           {/* Navbar Toggle for Mobile View */}
           <button 
