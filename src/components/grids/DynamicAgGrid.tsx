@@ -25,8 +25,9 @@ type DynamicAgGridWithFetchProps = {
   height?: string;
   enableExport?: boolean;
   hiddenColumns?: string[];
-  searchableColumns?: string[]; // <-- New prop for searchable columns
+  searchableColumns?: string[]; 
   onRowClick?: (row: Record<string, unknown>) => void;
+  customColumnWidths?: Record<string, number>;
 };
 
 // Custom cell renderer for the edit icon
@@ -51,8 +52,9 @@ export default function DynamicAgGridWithFetch({
   height = '500px',
   enableExport = false,
   hiddenColumns = [],
-  searchableColumns = [], // <-- Default to an empty array
+  searchableColumns = [],
   onRowClick,
+  customColumnWidths = {},
 }: DynamicAgGridWithFetchProps) {
   // Register CSV Export module
   ModuleRegistry.registerModules([CsvExportModule]);
@@ -70,34 +72,36 @@ export default function DynamicAgGridWithFetch({
       headerName: 'Edit',
       field: 'edit',
       cellRenderer: EditCellRenderer,
-      width: 50,
+      width: 30,
       pinned: 'left',
       sortable: false,
       filter: false,
       resizable: false,
     };
   
-    // Generate remaining columns dynamically
+    // Generate columns dynamically
     let generatedCols = Object.keys(rowData[0])
       .filter((key) => !hiddenColumns.includes(key))
       .map<ColDef>((key) => {
-        const isSearchable = searchableColumns.includes(key);
+        const headerName = key.charAt(0).toUpperCase() + key.slice(1);
+  
         return {
-          headerName: key.charAt(0).toUpperCase() + key.slice(1),
+          headerName,
           field: key,
           sortable: true,
-          filter: isSearchable ? 'agTextColumnFilter' : false,
-          filterParams: isSearchable
+          filter: searchableColumns.includes(key) ? 'agTextColumnFilter' : false,
+          filterParams: searchableColumns.includes(key)
             ? {
                 textFormatter: (value: string) =>
                   value ? value.toLowerCase() : null,
               }
             : undefined,
           resizable: true,
+          width: customColumnWidths?.[key] || undefined, // Apply override if provided
         };
       });
   
-    // Find and move "active" column to the first position (after "Edit")
+    // Move "active" column (if exists) to first position after "Edit"
     const activeIndex = generatedCols.findIndex((col) => col.field === 'active');
     if (activeIndex !== -1) {
       const [activeColumn] = generatedCols.splice(activeIndex, 1);
@@ -105,7 +109,7 @@ export default function DynamicAgGridWithFetch({
     }
   
     return [editColumn, ...generatedCols];
-  }, [rowData, columnDefs, hiddenColumns, searchableColumns]);  
+  }, [rowData, columnDefs, hiddenColumns, searchableColumns, customColumnWidths]);  
 
   const defaultColDef: ColDef = {
     minWidth: 100,
@@ -132,8 +136,8 @@ export default function DynamicAgGridWithFetch({
   };
 
   // Recursive function to fetch additional records in the background
-  const fetchAdditionalRecords = async (lastId: number | null) => {
-    const payload = { tableName, query, username, recordsLeft: null, lastId };
+  const fetchAdditionalRecords = async (lastId: number | null, recordsLeft: number | null ) => {
+    const payload = { tableName, query, username, recordsLeft, lastId };
     try {
       const response = await axios.post(
         'http://localhost:5000/api/crud/read',
@@ -145,8 +149,8 @@ export default function DynamicAgGridWithFetch({
         ...(Array.isArray(newRows) ? newRows : []),
       ]);
       autoSizeColumns();
-      if (response.data.recordsLeft > 0) {
-        await fetchAdditionalRecords(response.data.lastId);
+      if (response.data.data.recordsLeft > 0) {
+        await fetchAdditionalRecords(response.data.data.lastId, response.data.data.recordsLeft);
       }
     } catch (error) {
       console.error('Error fetching additional records:', error);
@@ -165,8 +169,8 @@ export default function DynamicAgGridWithFetch({
         );
         const initialRows = response.data.data.data;
         setRowData(Array.isArray(initialRows) ? initialRows : []);
-        if (response.data.recordsLeft > 0) {
-          fetchAdditionalRecords(response.data.lastId);
+        if (response.data.data.recordsLeft > 0) {
+          fetchAdditionalRecords(response.data.data.lastId, response.data.data.recordsLeft);
         }
       } catch (error) {
         console.error('Error fetching initial data:', error);

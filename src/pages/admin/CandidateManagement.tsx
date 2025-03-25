@@ -30,8 +30,23 @@ function CandidateManagement() {
               "secretJobCode",
               "secretJobCodeExpiration",
               "id",
+              "jobId",
+              "notes"
             ]}
-            searchableColumns={["firstName"]}  // Only firstName column is searchable with an input field
+            searchableColumns={["firstName"]}
+            customColumnWidths={{
+              active: 40,
+              firstName: 145,
+              lastName: 145,
+              phase: 145,
+              needSponsorship: 160,
+              gender: 100,
+              veteranStatus: 145,
+              disability: 145,
+              potential: 120,
+              yearsOfExperience: 120,
+              remote: 80
+            }}
           />
         </Col>
       </Row>
