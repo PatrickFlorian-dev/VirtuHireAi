@@ -17,11 +17,11 @@ import {
 const navItems = [
   { to: '/', label: 'Home', icon: faHome },
   { to: '/admin/dashboard', label: 'Dashboard', icon: faTachometerAlt },
-  { to: '/admin/company', label: 'Company Management', icon: faBuilding },
-  { to: '/admin/employee', label: 'Employee Management', icon: faUsers },
-  { to: '/admin/job', label: 'Job Management', icon: faBriefcase },
-  { to: '/admin/interview', label: 'Interview Management', icon: faCalendarCheck },
-  { to: '/admin/candidate', label: 'Candidate Management', icon: faUserTie },
+  { to: '/admin/company', label: 'Company', icon: faBuilding },
+  { to: '/admin/employee', label: 'Employee', icon: faUsers },
+  { to: '/admin/job', label: 'Job', icon: faBriefcase },
+  { to: '/admin/interview', label: 'Interview', icon: faCalendarCheck },
+  { to: '/admin/candidate', label: 'Candidate', icon: faUserTie },
 ];
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
@@ -87,8 +87,8 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Main Content */}
         <Col
           style={{
-            transition: `margin-left ${transitionSpeed}ms ease-in-out`,
-            marginLeft: collapsed ? '80px' : '250px',
+            //transition: `margin-left ${transitionSpeed}ms ease-in-out`,
+            //marginLeft: collapsed ? '80px' : '250px',
           }}
           className="p-4"
         >
