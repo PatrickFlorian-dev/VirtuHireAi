@@ -21,7 +21,17 @@ function CandidateManagement() {
             title="Candidate Grid"
             enableExport={true}
             gridOptions={{ paginationPageSize: 50 }}
-            hiddenColumns={["createdAt", "updatedAt", "password", "otherInfo"]}
+            hiddenColumns={[
+              "createdAt",
+              "updatedAt",
+              "password",
+              "otherInfo",
+              "jobId",
+              "secretJobCode",
+              "secretJobCodeExpiration",
+              "id",
+            ]}
+            searchableColumns={["firstName"]}  // Only firstName column is searchable with an input field
           />
         </Col>
       </Row>
