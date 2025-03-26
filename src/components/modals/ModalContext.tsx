@@ -13,6 +13,11 @@ type ModalSize = "small" | "regular" | "large";
 type FontName = "home" | "check-circle" | "times-circle" | "circle-info";
 type ModalType = "info" | "create" | "edit" | "readonly";
 
+interface ValidationRule {
+  type: "required" | "minLength";
+  value?: number;
+  message: string;
+}
 export interface ModalData {
   title?: string;
   message?: string;
@@ -25,6 +30,7 @@ export interface ModalData {
   hiddenFields?: string[];
   removedFields?: string[];
   disabledFields?: string[];
+  validationRules?: Record<string, ValidationRule[]>;
   onSubmit?: (updatedData: Record<string, unknown>) => void;
 }
 
@@ -87,6 +93,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }): React.Reac
         initialData={initialData}
         hiddenFields={modalData.hiddenFields || []}
         disabledFields={modalData.disabledFields || []} // Pass disabledFields here
+        validationRules={modalData.validationRules || {}}
         onSubmit={(updatedData: Record<string, unknown>) => {
           if (modalData.onSubmit) {
             modalData.onSubmit(updatedData);

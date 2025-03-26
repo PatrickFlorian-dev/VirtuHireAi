@@ -4,11 +4,18 @@ import { FloatingLabelInput } from '../forms/FloatingLabelInput';
 
 export type ModalType = "info" | "create" | "edit" | "readonly";
 
+interface ValidationRule {
+  type: "required" | "minLength";
+  value?: number;
+  message: string;
+}
+
 interface ModalFormProps {
   modalType: ModalType;
   initialData: Record<string, unknown>;
   hiddenFields: string[];
-  disabledFields: string[]; // NEW: keys to ignore for changes
+  disabledFields: string[];
+  validationRules?: Record<string, ValidationRule[]>;
   onSubmit: (updatedData: Record<string, unknown>) => void;
 }
 
@@ -17,14 +24,16 @@ export const ModalForm = ({
   initialData,
   hiddenFields,
   disabledFields,
+  validationRules = {},
   onSubmit,
 }: ModalFormProps): React.ReactElement => {
-  // Always call hooks unconditionally
+
   const [formState, setFormState] = useState<Record<string, unknown>>(initialData);
   const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(false);
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Infer input type from key and value
   const inferInputType = (key: string, value: unknown): string => {
     if (typeof value === "number") return "number";
     if (typeof value === "string") {
@@ -36,29 +45,43 @@ export const ModalForm = ({
     return "text";
   };
 
-  // For create, all visible fields must be nonempty (if string) to enable the button.
-  // For edit, at least one editable (non-disabled) field must be changed.
   useEffect(() => {
+    const newErrors: Record<string, string> = {};
+
+    for (const key in formState) {
+      if (!validationRules[key]) continue;
+      const rules = validationRules[key];
+      for (const rule of rules) {
+        const value = formState[key];
+        if (rule.type === "required" && (!value || String(value).trim() === "")) {
+          newErrors[key] = rule.message;
+          break;
+        }
+        if (rule.type === "minLength" && String(value || "").length < (rule.value || 0)) {
+          newErrors[key] = rule.message;
+          break;
+        }
+      }
+    }
+
+    setErrors(newErrors);
+
     if (modalType === "create") {
-      const valid = Object.entries(formState)
-        .filter(([key]) => !hiddenFields.includes(key))
-        .every(([, value]) => {
-          if (typeof value === "string") return value.trim() !== "";
-          return value !== undefined && value !== null;
-        });
-      setIsValid(valid);
+      setIsValid(Object.keys(newErrors).length === 0);
     } else if (modalType === "edit") {
-      const editableKeys = Object.keys(formState).filter(
-        (key) => !disabledFields.includes(key)
-      );
+      const editableKeys = Object.keys(formState).filter(key => !disabledFields.includes(key));
       const changed = editableKeys.some(key => formState[key] !== initialData[key]);
       setHasChanged(changed);
     }
-  }, [formState, initialData, modalType, hiddenFields, disabledFields]);
+
+  }, [formState, validationRules, modalType, disabledFields, initialData]);
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setTouchedFields(prev => ({ ...prev, [e.target.name]: true }));
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    // If the input is cleared, update state with null; otherwise, update with the new value.
     setFormState(prev => ({ ...prev, [name]: value.trim() === "" ? null : value }));
   };
 
@@ -67,7 +90,6 @@ export const ModalForm = ({
     onSubmit(formState);
   };
 
-  // Filter out hidden fields for the form-based modal
   const visibleFields = Object.entries(formState).filter(([key]) => !hiddenFields.includes(key));
 
   return (
@@ -80,12 +102,12 @@ export const ModalForm = ({
                 id={key}
                 name={key}
                 label={key}
+                error={touchedFields[key] && errors[key]}
                 type={inferInputType(key, value)}
-                // If the value is null, display an empty string
                 value={value === null ? "" : String(value)}
                 onChange={modalType === "readonly" ? () => {} : handleChange}
+                onBlur={handleBlur}
                 readOnly={modalType === "readonly"}
-                // You might want to pass disabled status to the input as well if needed
                 disabled={disabledFields.includes(key)}
               />
             </Col>
@@ -97,9 +119,7 @@ export const ModalForm = ({
               <button
                 type="submit"
                 className="btn btn-primary"
-                disabled={
-                  modalType === "create" ? !isValid : modalType === "edit" ? !hasChanged : false
-                }
+                disabled={modalType === "create" ? !isValid : modalType === "edit" ? !hasChanged : false}
               >
                 {modalType === "create" ? "Submit" : "Update"}
               </button>

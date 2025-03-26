@@ -48,7 +48,17 @@ const EditCellRenderer: React.FC<ICellRendererParams> = (props) => {
             modalType: "create",
             formData: props.data,
             hiddenFields: ["gender"],
-            removedFields: ["id"]
+            removedFields: ["id"],
+            validationRules: {
+              firstName: [
+                { type: "required", message: "First name is required" },
+                { type: "minLength", value: 2, message: "Minimum length is 6" }
+              ],
+              lastName: [
+                { type: "required", message: "Last name is required" },
+                { type: "minLength", value: 2, message: "Minimum length is 6" }
+              ]
+            }
           })
           }
       }
@@ -225,7 +235,17 @@ export default function DynamicAgGridWithFetch({
               modalType: "create",
               formData: {id: "1", firstName: "", lastName: "", "gender": ""}, // Form fields 
               hiddenFields: ["gender"],
-              removedFields: ["id"]
+              removedFields: ["id"],
+              validationRules: {
+                firstName: [
+                  { type: "required", message: "First name is required" },
+                  { type: "minLength", value: 2, message: "Minimum length is 2" }
+                ],
+                lastName: [
+                  { type: "required", message: "Last name is required" },
+                  { type: "minLength", value: 2, message: "Minimum length is 2" }
+                ]
+              }
             })
           }
           className="bg-green-500 text-white px-4 py-1 rounded"

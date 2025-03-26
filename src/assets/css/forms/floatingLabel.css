@@ -42,3 +42,7 @@
   background: white;
   padding: 0 0.25rem;
 }
+
+.has-error input {
+  border: 1px solid red;
+}
