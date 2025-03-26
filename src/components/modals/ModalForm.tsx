@@ -8,6 +8,7 @@ interface ModalFormProps {
   modalType: ModalType;
   initialData: Record<string, unknown>;
   hiddenFields: string[];
+  disabledFields: string[]; // NEW: keys to ignore for changes
   onSubmit: (updatedData: Record<string, unknown>) => void;
 }
 
@@ -15,6 +16,7 @@ export const ModalForm = ({
   modalType,
   initialData,
   hiddenFields,
+  disabledFields,
   onSubmit,
 }: ModalFormProps): React.ReactElement => {
   // Always call hooks unconditionally
@@ -22,7 +24,6 @@ export const ModalForm = ({
   const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(false);
 
-  // For "info" mode, we won't use formState, but we must still call the hooks.
   // Infer input type from key and value
   const inferInputType = (key: string, value: unknown): string => {
     if (typeof value === "number") return "number";
@@ -36,7 +37,7 @@ export const ModalForm = ({
   };
 
   // For create, all visible fields must be nonempty (if string) to enable the button.
-  // For edit, at least one field must be changed.
+  // For edit, at least one editable (non-disabled) field must be changed.
   useEffect(() => {
     if (modalType === "create") {
       const valid = Object.entries(formState)
@@ -47,10 +48,13 @@ export const ModalForm = ({
         });
       setIsValid(valid);
     } else if (modalType === "edit") {
-      const changed = Object.keys(formState).some(key => formState[key] !== initialData[key]);
+      const editableKeys = Object.keys(formState).filter(
+        (key) => !disabledFields.includes(key)
+      );
+      const changed = editableKeys.some(key => formState[key] !== initialData[key]);
       setHasChanged(changed);
     }
-  }, [formState, initialData, modalType, hiddenFields]);
+  }, [formState, initialData, modalType, hiddenFields, disabledFields]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -66,17 +70,7 @@ export const ModalForm = ({
   // Filter out hidden fields for the form-based modal
   const visibleFields = Object.entries(formState).filter(([key]) => !hiddenFields.includes(key));
 
-  // Conditionally render based on modalType
-  return modalType === "info" ? (
-    <Container>
-      <Row className="justify-content-center">
-        <Col>
-          <h2>{String(initialData.title)}</h2>
-          <p>{String(initialData.message)}</p>
-        </Col>
-      </Row>
-    </Container>
-  ) : (
+  return (
     <form onSubmit={handleSubmit}>
       <Container>
         <Row>
@@ -91,6 +85,8 @@ export const ModalForm = ({
                 value={value === null ? "" : String(value)}
                 onChange={modalType === "readonly" ? () => {} : handleChange}
                 readOnly={modalType === "readonly"}
+                // You might want to pass disabled status to the input as well if needed
+                disabled={disabledFields.includes(key)}
               />
             </Col>
           ))}

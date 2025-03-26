@@ -24,6 +24,7 @@ export interface ModalData {
   formData?: Record<string, unknown>;
   hiddenFields?: string[];
   removedFields?: string[];
+  disabledFields?: string[];
   onSubmit?: (updatedData: Record<string, unknown>) => void;
 }
 
@@ -85,6 +86,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }): React.Reac
         modalType={modalData.modalType as Exclude<ModalType, "info">}
         initialData={initialData}
         hiddenFields={modalData.hiddenFields || []}
+        disabledFields={modalData.disabledFields || []} // Pass disabledFields here
         onSubmit={(updatedData: Record<string, unknown>) => {
           if (modalData.onSubmit) {
             modalData.onSubmit(updatedData);

@@ -1,6 +1,5 @@
 import React, { ChangeEvent } from 'react';
 import '../../assets/css/forms/floatingLabel.css';
-
 interface FloatingLabelInputProps {
   id: string;
   name: string;
@@ -8,6 +7,7 @@ interface FloatingLabelInputProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   readOnly?: boolean;
+  disabled?: boolean; // Add this line
   type?: string;
 }
 
@@ -18,6 +18,7 @@ export const FloatingLabelInput = ({
   value,
   onChange,
   readOnly = false,
+  disabled = false,
   type = "text",
 }: FloatingLabelInputProps): React.ReactElement => {
   return (
@@ -30,7 +31,8 @@ export const FloatingLabelInput = ({
         value={value}
         onChange={onChange}
         readOnly={readOnly}
-        placeholder=" "  /* use an empty placeholder to trigger :placeholder-shown */
+        disabled={disabled}
+        placeholder=" "
         required
       />
       <label htmlFor={id}>{label}</label>
