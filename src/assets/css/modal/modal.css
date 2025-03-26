@@ -4,8 +4,6 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 35%;
-    height: 35%;
     background: white;
     border-radius: 10px;
     padding: 20px;
@@ -13,10 +11,50 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    
+  
     /* Apply animation */
     animation: stretchIn 0.4s ease-out;
   }
+  
+  /* Default Small Modal */
+  .modal-small {
+    width: 35%;
+    height: 35%;
+  }
+  
+  /* Regular Modal */
+  .modal-regular {
+    width: 60%;
+    height: 60%;
+  }
+  
+  /* Large Fullscreen Modal */
+  .modal-large {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0; /* Remove border radius for fullscreen effect */
+  }
+
+  /* Icon in the top-left corner with a white circular background */
+.modal-icon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Make sure the icon itself is centered */
+  .modal-icon svg {
+    font-size: 35px;
+    color: black;
+  }  
   
   /* Keyframe animation for the stretch effect */
   @keyframes stretchIn {

@@ -201,9 +201,15 @@ export default function DynamicAgGridWithFetch({
         <button
           onClick={() =>
             openModal({
-              title: "Hello from Home",
-              message: "This is a message from the Home component.",
-              allowCloseOutsideOfModal: false
+              title: "Hello from Candidate",
+              message: "This is a message from the AG Grid Component component.",
+              allowCloseOutsideOfModal: false,
+              modalSize: "regular",
+              fontName: "circle-info",
+              modalType: "create",
+              formData: {id: "1", firstName: "", lastName: "", "gender": ""}, // Form fields 
+              hiddenFields: ["gender"],
+              removedFields: ["id"]
             })
           }
           className="bg-green-500 text-white px-4 py-1 rounded"
