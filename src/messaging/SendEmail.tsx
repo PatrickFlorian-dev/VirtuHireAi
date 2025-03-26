@@ -1,6 +1,4 @@
-import { useState } from "react";
 import emailjs from "emailjs-com";
-import GenericModal from "../components/modals/GenericModal";
 
 const sendEmail = (
   e: React.FormEvent<HTMLFormElement>,
@@ -24,13 +22,12 @@ const sendEmail = (
 };
 
 const EmailForm: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
       <form
         onSubmit={(e) => {
-          sendEmail(e, () => setIsModalOpen(true));
+            sendEmail(e, () => {});
           e.preventDefault();
         }}
       >
@@ -43,13 +40,6 @@ const EmailForm: React.FC = () => {
         <button type="submit">Send Email</button>
       </form>
 
-      {/* MODAL COMPONENT */}
-      <GenericModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Email Sent Successfully"
-        content="Your email has been sent to the candidate!"
-      />
     </>
   );
 };

@@ -14,6 +14,7 @@ import { ModuleRegistry } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { useModal } from "../modals/ModalContext";
 
 type DynamicAgGridWithFetchProps = {
   tableName: string;
@@ -72,11 +73,12 @@ export default function DynamicAgGridWithFetch({
       headerName: 'Edit',
       field: 'edit',
       cellRenderer: EditCellRenderer,
-      width: 30,
+      width: 65,
       pinned: 'left',
       sortable: false,
       filter: false,
       resizable: false,
+      maxWidth: 65
     };
   
     // Generate columns dynamically
@@ -189,18 +191,34 @@ export default function DynamicAgGridWithFetch({
     }
   }, [rowData]);
 
+  const { openModal } = useModal();
+
   return (
     <div className="space-y-4">
       {title && <h2 className="text-xl font-bold">{title}</h2>}
       <div className="flex justify-between items-center mb-2">
-        {enableExport && (
-          <button
-            onClick={handleExport}
-            className="bg-blue-500 text-white px-4 py-1 rounded"
-          >
-            Export CSV
-          </button>
-        )}
+        <div className="flex gap-2">
+        <button
+          onClick={() =>
+            openModal({
+              title: "Hello from Home",
+              message: "This is a message from the Home component.",
+              allowCloseOutsideOfModal: false
+            })
+          }
+          className="bg-green-500 text-white px-4 py-1 rounded"
+        >
+          Create
+        </button>
+          {enableExport && (
+            <button
+              onClick={handleExport}
+              className="bg-blue-500 text-white px-4 py-1 rounded"
+            >
+              Export CSV
+            </button>
+          )}
+        </div>
       </div>
       {loading ? (
         <div style={{ width: '100%', height }} className="flex items-center justify-center">

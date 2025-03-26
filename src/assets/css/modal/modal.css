@@ -1,0 +1,73 @@
+/* Center the modal perfectly */
+.custom-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 35%;
+    height: 35%;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    
+    /* Apply animation */
+    animation: stretchIn 0.4s ease-out;
+  }
+  
+  /* Keyframe animation for the stretch effect */
+  @keyframes stretchIn {
+    0% {
+      transform: translate(-50%, -50%) scale(0.5, 0.5); /* Small at start */
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.1, 1.1); /* Slightly overshoot */
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1, 1); /* Normal size */
+    }
+  }
+  
+  /* Full-screen dark overlay */
+  .custom-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+  }
+  
+  /* Fade in overlay */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  /* Smooth exit animation */
+  .custom-modal.closing {
+    animation: stretchOut 0.3s ease-in forwards;
+  }
+  
+  @keyframes stretchOut {
+    0% {
+      transform: translate(-50%, -50%) scale(1, 1);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(0.5, 0.5);
+      opacity: 0;
+    }
+  }
+  

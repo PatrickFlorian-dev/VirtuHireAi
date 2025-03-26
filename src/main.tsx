@@ -8,10 +8,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './assets/css/fonts/fonts.css';
+import { ModalProvider } from "./components/modals/ModalContext";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <Provider store={store}>
-    <App />
-    <ToastContainer /> 
-  </Provider>
+  <ModalProvider>
+    <Provider store={store}>
+      <App />
+      <ToastContainer /> 
+    </Provider>
+  </ModalProvider>
 );
