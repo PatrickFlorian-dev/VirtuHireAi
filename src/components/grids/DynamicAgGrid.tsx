@@ -33,9 +33,25 @@ type DynamicAgGridWithFetchProps = {
 
 // Custom cell renderer for the edit icon
 const EditCellRenderer: React.FC<ICellRendererParams> = (props) => {
+  const { openModal } = useModal();
   return (
     <span
-      onClick={() => console.log('Edit clicked for:', props.data)}
+      onClick={
+        () => { 
+          console.log('Edit clicked for:', props.data);
+          openModal({
+            title: "Hello from Candidate",
+            message: "This is a message from the AG Grid Component component.",
+            allowCloseOutsideOfModal: false,
+            modalSize: "regular",
+            fontName: "circle-info",
+            modalType: "create",
+            formData: props.data,
+            hiddenFields: ["gender"],
+            removedFields: ["id"]
+          })
+          }
+      }
       style={{ cursor: 'pointer', color: '#007bff' }}
     >
       <FontAwesomeIcon icon={faPencilAlt} />

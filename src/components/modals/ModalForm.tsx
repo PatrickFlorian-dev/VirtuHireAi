@@ -1,19 +1,28 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import { FloatingLabelInput } from '../forms/FloatingLabelInput';
 
-type ModalType = "info" | "create" | "edit" | "readonly";
+export type ModalType = "info" | "create" | "edit" | "readonly";
 
 interface ModalFormProps {
-  modalType: Exclude<ModalType, "info">; // "create" | "edit" | "readonly"
+  modalType: ModalType;
   initialData: Record<string, unknown>;
   hiddenFields: string[];
   onSubmit: (updatedData: Record<string, unknown>) => void;
 }
 
-export const ModalForm = ({ modalType, initialData, hiddenFields, onSubmit }: ModalFormProps): React.ReactElement => {
+export const ModalForm = ({
+  modalType,
+  initialData,
+  hiddenFields,
+  onSubmit,
+}: ModalFormProps): React.ReactElement => {
+  // Always call hooks unconditionally
   const [formState, setFormState] = useState<Record<string, unknown>>(initialData);
   const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(false);
 
+  // For "info" mode, we won't use formState, but we must still call the hooks.
   // Infer input type from key and value
   const inferInputType = (key: string, value: unknown): string => {
     if (typeof value === "number") return "number";
@@ -26,7 +35,7 @@ export const ModalForm = ({ modalType, initialData, hiddenFields, onSubmit }: Mo
     return "text";
   };
 
-  // For create, all fields must be nonempty (if string) to enable the button.
+  // For create, all visible fields must be nonempty (if string) to enable the button.
   // For edit, at least one field must be changed.
   useEffect(() => {
     if (modalType === "create") {
@@ -45,7 +54,8 @@ export const ModalForm = ({ modalType, initialData, hiddenFields, onSubmit }: Mo
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    setFormState(prev => ({ ...prev, [name]: value }));
+    // If the input is cleared, update state with null; otherwise, update with the new value.
+    setFormState(prev => ({ ...prev, [name]: value.trim() === "" ? null : value }));
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
@@ -53,37 +63,54 @@ export const ModalForm = ({ modalType, initialData, hiddenFields, onSubmit }: Mo
     onSubmit(formState);
   };
 
-  return (
+  // Filter out hidden fields for the form-based modal
+  const visibleFields = Object.entries(formState).filter(([key]) => !hiddenFields.includes(key));
+
+  // Conditionally render based on modalType
+  return modalType === "info" ? (
+    <Container>
+      <Row className="justify-content-center">
+        <Col>
+          <h2>{String(initialData.title)}</h2>
+          <p>{String(initialData.message)}</p>
+        </Col>
+      </Row>
+    </Container>
+  ) : (
     <form onSubmit={handleSubmit}>
-      {Object.entries(formState).map(([key, value]) => {
-        if (hiddenFields.includes(key)) return null;
-        return (
-          <div key={key} className="mb-3">
-            <label htmlFor={key} className="form-label">
-              {key}
-            </label>
-            <input
-              type={inferInputType(key, value)}
-              className="form-control"
-              id={key}
-              name={key}
-              value={String(formState[key])}
-              onChange={modalType === "readonly" ? undefined : handleChange}
-              readOnly={modalType === "readonly"}
-              required
-            />
-          </div>
-        );
-      })}
-      {modalType !== "readonly" && (
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={modalType === "create" ? !isValid : modalType === "edit" ? !hasChanged : false}
-        >
-          {modalType === "create" ? "Submit" : "Update"}
-        </button>
-      )}
+      <Container>
+        <Row>
+          {visibleFields.map(([key, value]) => (
+            <Col md={4} key={key}>
+              <FloatingLabelInput
+                id={key}
+                name={key}
+                label={key}
+                type={inferInputType(key, value)}
+                // If the value is null, display an empty string
+                value={value === null ? "" : String(value)}
+                onChange={modalType === "readonly" ? () => {} : handleChange}
+                readOnly={modalType === "readonly"}
+              />
+            </Col>
+          ))}
+        </Row>
+        {modalType !== "readonly" && (
+          <Row>
+            <Col className="text-center">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={
+                  modalType === "create" ? !isValid : modalType === "edit" ? !hasChanged : false
+                }
+              >
+                {modalType === "create" ? "Submit" : "Update"}
+              </button>
+            </Col>
+          </Row>
+        )}
+      </Container>
     </form>
   );
 };

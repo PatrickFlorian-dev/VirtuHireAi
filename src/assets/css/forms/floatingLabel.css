@@ -1,0 +1,44 @@
+/* Container for the input and label */
+.floating-label-input {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+/* Input field styling */
+.floating-label-input input {
+  width: 100%;
+  padding: 1.25rem 0.75rem 0.5rem; /* top padding reserves space for label */
+  border: 1px solid #0984e3;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+/* Input focus border color */
+.floating-label-input input:focus {
+  outline: none;
+  border: 2px solid #00b894;
+}
+
+/* Label styling - initially displayed inside the input in full size */
+.floating-label-input label {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0984e3;
+  pointer-events: none;
+  transition: all 0.2s ease-out;
+  font-size: 1rem;
+}
+
+/* When the input is focused or not empty, shrink and move the label */
+.floating-label-input input:focus + label,
+.floating-label-input input:not(:placeholder-shown) + label,
+.floating-label-input input:not([value=""]) + label {
+  top: 0.2rem;
+  font-size: 0.75rem;
+  color: #495057;
+  background: white;
+  padding: 0 0.25rem;
+}
