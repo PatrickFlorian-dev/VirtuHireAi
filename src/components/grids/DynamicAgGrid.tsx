@@ -43,12 +43,12 @@ const EditCellRenderer: React.FC<ICellRendererParams> = (props) => {
             title: "Hello from Candidate",
             message: "This is a message from the AG Grid Component component.",
             allowCloseOutsideOfModal: false,
-            modalSize: "regular",
+            modalSize: "large",
             fontName: "circle-info",
             modalType: "create",
             formData: props.data,
-            hiddenFields: ["gender"],
-            removedFields: ["id"],
+            hiddenFields: ["gender", "otherInfo", "id", "secretJobCode", "secretJobCodeExpiration", "updatedAt"],
+            removedFields: [],
             validationRules: {
               firstName: [
                 { type: "required", message: "First name is required" },

@@ -25,11 +25,17 @@
   /* Regular Modal */
   .modal-regular {
     width: 60%;
-    height: 90%;
+    height: 60%;
+  }
+
+  /* Large Modal */
+  .modal-large {
+    width: 85%;
+    height: 95%;
   }
   
   /* Large Fullscreen Modal */
-  .modal-large {
+  .modal-full {
     width: 100vw;
     height: 100vh;
     border-radius: 0; /* Remove border radius for fullscreen effect */

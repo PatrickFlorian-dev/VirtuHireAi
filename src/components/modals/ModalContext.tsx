@@ -9,7 +9,7 @@ import { ModalForm } from "./ModalForm";
 
 Modal.setAppElement("#root");
 
-type ModalSize = "small" | "regular" | "large";
+type ModalSize = "small" | "regular" | "large" | "full";
 type FontName = "home" | "check-circle" | "times-circle" | "circle-info";
 type ModalType = "info" | "create" | "edit" | "readonly";
 
