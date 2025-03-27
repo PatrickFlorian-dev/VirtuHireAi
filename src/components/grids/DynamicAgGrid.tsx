@@ -27,6 +27,8 @@ type DynamicAgGridWithFetchProps = {
   enableExport?: boolean;
   hiddenColumns?: string[];
   searchableColumns?: string[]; 
+  disabledFields?: string[];
+  dateTimeFields?: string[]; 
   onRowClick?: (row: Record<string, unknown>) => void;
   customColumnWidths?: Record<string, number>;
 };
@@ -49,14 +51,15 @@ const EditCellRenderer: React.FC<ICellRendererParams> = (props) => {
             formData: props.data,
             hiddenFields: ["gender", "otherInfo", "id", "secretJobCode", "secretJobCodeExpiration", "updatedAt"],
             removedFields: [],
+            dateTimeFields: ["dob", "availability1Start"],
             validationRules: {
               firstName: [
                 { type: "required", message: "First name is required" },
-                { type: "minLength", value: 2, message: "Minimum length is 6" }
+                { type: "minLength", value: 2, message: "Minimum length is 2" }
               ],
               lastName: [
                 { type: "required", message: "Last name is required" },
-                { type: "minLength", value: 2, message: "Minimum length is 6" }
+                { type: "minLength", value: 2, message: "Minimum length is 2" }
               ]
             }
           })
@@ -236,6 +239,7 @@ export default function DynamicAgGridWithFetch({
               formData: {id: "1", firstName: "", lastName: "", "gender": ""}, // Form fields 
               hiddenFields: ["gender"],
               removedFields: ["id"],
+              dateTimeFields: ["dob"],
               validationRules: {
                 firstName: [
                   { type: "required", message: "First name is required" },

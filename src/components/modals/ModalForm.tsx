@@ -18,6 +18,7 @@ interface ModalFormProps {
   hiddenFields: string[];
   disabledFields: string[];
   validationRules?: Record<string, ValidationRule[]>;
+  dateTimeFields?: string[];
   onSubmit: (updatedData: Record<string, unknown>) => void;
 }
 
@@ -28,6 +29,7 @@ export const ModalForm = ({
   disabledFields,
   validationRules = {},
   onSubmit,
+  dateTimeFields = []
 }: ModalFormProps): React.ReactElement => {
 
   const [formState, setFormState] = useState<Record<string, unknown>>(initialData);
@@ -35,6 +37,9 @@ export const ModalForm = ({
   const [isValid, setIsValid] = useState<boolean>(false);
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // ---- (NEW) DateTimePicker open fix ---- //
+  const [forceReset, setForceReset] = useState(0);
 
   const inferInputType = (key: string, value: unknown): string => {
     if (typeof value === "number") return "number";
@@ -77,12 +82,12 @@ export const ModalForm = ({
   }, [formState, validationRules, modalType, disabledFields, initialData]);
 
   useEffect(() => {
-      if (modalType === "edit") {
-        setHasChanged(false);
-      }
-      if (modalType === "create") {
-        setIsValid(false);
-      }
+    if (modalType === "edit") {
+      setHasChanged(false);
+    }
+    if (modalType === "create") {
+      setIsValid(false);
+    }
   }, [modalType, initialData]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -106,26 +111,29 @@ export const ModalForm = ({
       <Container>
         <Row>
         {visibleFields.map(([key, value]) => {
-          const lowerKey = key.toLowerCase();
-          const isDateTimeField = 
-            lowerKey.includes("date") || 
-            lowerKey.includes("time") || 
-            (typeof value === 'string' && !isNaN(Date.parse(value)));
+          //const lowerKey = key.toLowerCase();
+          const isDateTimeField = dateTimeFields.includes(key);
+          //const isDateTimeField = 
+          //dateTimeFields?.includes(key) ||
+          //lowerKey.includes("date") || 
+          //lowerKey.includes("time") || 
+          //(typeof value === 'string' && !isNaN(Date.parse(value)));
 
           return (
-            <Col md={4} key={key}>
+            <Col md={4} key={key + forceReset /* force key to change when reset */}>
               {isDateTimeField ? (
                 <div className="mb-3">
                   <label>{key}</label>
                   <DateTimePicker
-                    value={value ? new Date(value as string) : new Date()} // Default to current date if empty
+                     value={value && !isNaN(Date.parse(String(value))) ? new Date(value as string) : null}
                     onChange={(date: Date | null) => {
-                      setFormState(prev => ({ ...prev, [key]: date ? date.toISOString() : "" }));
+                      setFormState(prev => ({ ...prev, [key]: date ? date.toISOString() : null }));
                       setTouchedFields(prev => ({ ...prev, [key]: true }));
+                      if (!date) setForceReset(f => f + 1); // <-- trigger re-render to fix picker after clearing
                     }}
                     disabled={disabledFields.includes(key)}
-                    format="MM-dd-yyyy : hh:mmaaaa"  // Show both date and time
-                    className="form-control"
+                    format="MM-dd-yyyy : hh:mmaaaa"
+                    clearIcon={undefined} // restores the (X) button
                   />
                   {touchedFields[key] && errors[key] && (
                     <div className="text-danger">{errors[key]}</div>
