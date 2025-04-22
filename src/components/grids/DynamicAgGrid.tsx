@@ -15,6 +15,8 @@ import { CsvExportModule } from '@ag-grid-community/csv-export';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { useModal } from "../modals/ModalContext";
+import { formatDateTimeWithMoment } from "../../utils/datetime/dateTimeFormatter";
+import moment from 'moment-timezone';
 
 type DynamicAgGridWithFetchProps = {
   tableName: string;
@@ -115,8 +117,15 @@ export default function DynamicAgGridWithFetch({
       .filter((key) => !hiddenColumns.includes(key))
       .map<ColDef>((key) => {
         const headerName = key.charAt(0).toUpperCase() + key.slice(1);
-  
-        return {
+
+        const isDateField = (value: unknown): boolean => {
+          if (typeof value !== 'string') return false;
+          // Regex to match common date-time formats (e.g., ISO 8601, YYYY-MM-DD, etc.)
+          const dateTimeRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|([+-]\d{2}:\d{2})))?$/;
+          return dateTimeRegex.test(value);
+        };
+
+        const columnDef: ColDef = {
           headerName,
           field: key,
           sortable: true,
@@ -130,6 +139,18 @@ export default function DynamicAgGridWithFetch({
           resizable: true,
           width: customColumnWidths?.[key] || undefined, // Apply override if provided
         };
+  
+        if (isDateField(rowData[0][key])) {
+          columnDef.valueFormatter = (params) => {
+            return formatDateTimeWithMoment(params.value, params.colDef.field);
+          };
+          columnDef.comparator = (valueA, valueB) => {
+            return moment(valueA).valueOf() - moment(valueB).valueOf();
+          };
+        }
+        
+        return columnDef;
+
       });
   
     // Move "active" column (if exists) to first position after "Edit"

@@ -120,7 +120,7 @@ export const ModalForm = ({
           //(typeof value === 'string' && !isNaN(Date.parse(value)));
 
           return (
-            <Col md={4} key={key + forceReset /* force key to change when reset */}>
+            <Col md={3} key={key + forceReset /* force key to change when reset */}>
               {isDateTimeField ? (
                 <div className="mb-3">
                   <label>{key}</label>
